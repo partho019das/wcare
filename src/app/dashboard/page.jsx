@@ -216,7 +216,7 @@ const DashboardPage = () => {
                   {item.doctorInfo?.specialty}
                 </p>
 
-                <p className="text-gray-700">
+                <p className="text-gray-750">
                   <span className="font-semibold">Patient:</span> {item.patientName}
                 </p>
 
