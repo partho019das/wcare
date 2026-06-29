@@ -28,7 +28,7 @@ const LoginPage = () => {
                 alert(error.message); 
             } else {
                 alert("Logged in successfully!");
-                router.push('/dashboard'); 
+                router.push('/'); 
                 router.refresh();
             }
         } catch (err) {
