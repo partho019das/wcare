@@ -1,12 +1,17 @@
 import React from 'react';
 import Link from 'next/link';
 
+// Next.js-কে নির্দেশ দেওয়া হলো যেন বিল্ডের সময় পেজটি ক্র্যাশ না করে ডাইনামিকালি রেন্ডার হয়
+export const dynamic = "force-dynamic";
+
 const DocterPage = async () => {
   let docter = [];
   
+  // এনভায়রনমেন্ট ভ্যারিয়েবল থেকে লাইভ URL নেওয়া হচ্ছে, ব্যাকআপ হিসেবে লোকালহোস্ট রাখা হলো
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+
   try {
-    // localhost এর জায়গায় 127.0.0.1 দিয়ে সরাসরি আইপিতে হিট করা হয়েছে
-    const res = await fetch("http://127.0.0.1:5000/docter", { cache: 'no-store' });
+    const res = await fetch(`${baseUrl}/docter`, { cache: 'no-store' });
     if (res.ok) {
       docter = await res.json();
     }
