@@ -1,4 +1,3 @@
-// /src/app/aform/page.jsx
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -9,26 +8,39 @@ import { createAppointment, getJwtToken } from '@/lib/api';
 const FormComponent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const docIdFromUrl = searchParams.get('docId') || '';
+  const docIdFromUrl = searchParams.get('docId') ? String(searchParams.get('docId')) : '';
 
   const { data: session, isPending } = authClient.useSession();
 
   const [doctors, setDoctors] = useState([]);
-  const [selectedDocId, setSelectedDocId] = useState(docIdFromUrl);
+  const [selectedDocId, setSelectedDocId] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/docter')
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+    fetch(`${baseUrl}/docter`)
       .then((res) => res.json())
-      .then((data) => setDoctors(Array.isArray(data) ? data : []))
+      .then((data) => {
+        const list = Array.isArray(data) ? data : [];
+        setDoctors(list);
+        if (docIdFromUrl) {
+          const match = list.find((d) => String(d._id) === docIdFromUrl || String(d.id) === docIdFromUrl);
+          if (match) {
+            setSelectedDocId(String(match._id || match.id));
+          }
+        }
+      })
       .catch((err) => console.error('Error fetching doctors:', err));
-  }, []);
+  }, [docIdFromUrl]);
 
   useEffect(() => {
-    if (docIdFromUrl) {
-      setSelectedDocId(docIdFromUrl);
+    if (docIdFromUrl && doctors.length > 0) {
+      const match = doctors.find((d) => String(d._id) === docIdFromUrl || String(d.id) === docIdFromUrl);
+      if (match) {
+        setSelectedDocId(String(match._id || match.id));
+      }
     }
-  }, [docIdFromUrl]);
+  }, [docIdFromUrl, doctors]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,7 +55,7 @@ const FormComponent = () => {
 
     const formData = new FormData(e.target);
     const doctorId = formData.get('doctorId');
-    const selectedDoctor = doctors.find((d) => d._id === doctorId);
+    const selectedDoctor = doctors.find((d) => String(d._id) === String(doctorId) || String(d.id) === String(doctorId));
 
     const appointmentPayload = {
       patientName: formData.get('patientName'),
@@ -55,7 +67,7 @@ const FormComponent = () => {
       problem: formData.get('problem'),
       doctorInfo: selectedDoctor
         ? {
-            id: selectedDoctor._id,
+            id: selectedDoctor._id || selectedDoctor.id,
             name: selectedDoctor.name,
             specialty: selectedDoctor.specialty,
             image: selectedDoctor.image,
@@ -96,11 +108,14 @@ const FormComponent = () => {
           className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 font-medium text-sm shadow-sm"
         >
           <option value="">-- Choose a Doctor --</option>
-          {doctors.map((doc) => (
-            <option key={doc._id} value={doc._id}>
-              {doc.name} ({doc.specialty})
-            </option>
-          ))}
+          {doctors.map((doc) => {
+            const idKey = doc._id || doc.id;
+            return (
+              <option key={String(idKey)} value={String(idKey)}>
+                {doc.name} ({doc.specialty})
+              </option>
+            );
+          })}
         </select>
       </div>
 
@@ -123,7 +138,7 @@ const FormComponent = () => {
             Phone Number
           </label>
           <input
-            type="tel"
+            type="text"
             name="phone"
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 text-sm shadow-sm"
