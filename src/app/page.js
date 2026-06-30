@@ -4,6 +4,9 @@ import BannerPage from "@/component/hero";
 import Image from "next/image";
 import DocterPage from "./docter/page";
 
+// Next.js-কে হোমপেজটি ডাইনামিকালি রেন্ডার করার নির্দেশ দেওয়া হলো
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <div>
