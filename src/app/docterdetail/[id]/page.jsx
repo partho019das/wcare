@@ -2,12 +2,22 @@ import React from 'react';
 import { getusers } from '../../lib/data'; 
 import Link from 'next/link';
 
+// Next.js প্রোডাকশন বিল্ডে যেন ডাইনামিক আইডি ফেচিং ক্র্যাশ না করে, তাই force-dynamic রাখা হলো
+export const dynamic = "force-dynamic";
+
 const DoctorDetailPage = async ({ params }) => {
-  const { id } = await params;
+  // Next.js 15+ এ params একটি প্রমিজ (Promise), তাই সঠিক উপায়ে এটি await করা হয়েছে
+  const resolvedParams = await params;
+  const id = resolvedParams?.id;
   
   const doctors = await getusers();
   const allDoctors = Array.isArray(doctors) ? doctors : [];
-  const doc = allDoctors.find((d) => d._id === id || d.id === id);
+  
+  // MongoDB _id সাধারণত Object আকারে থাকে, তাই স্ট্রিং কম্প্যারিজনের জন্য .toString() বা String() সেফটি হ্যান্ডলিং যোগ করা হলো
+  const doc = allDoctors.find((d) => {
+    const docId = d._id ? String(d._id) : String(d.id);
+    return docId === String(id);
+  });
 
   if (!doc) {
     return (
@@ -101,9 +111,9 @@ const DoctorDetailPage = async ({ params }) => {
               </div>
             </div>
 
-            {/* Dynamic target parameters router logic pass */}
+            {/* URL পাস করার সময় ID স্ট্রিং এ রূপান্তর নিশ্চিত করা হলো */}
             <Link 
-              href={`/aform?docId=${doc._id}`}
+              href={`/aform?docId=${doc._id ? String(doc._id) : String(doc.id)}`}
               className="w-full md:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 inline-flex items-center justify-center gap-2 text-center"
             >
               📅 Get Appointment
