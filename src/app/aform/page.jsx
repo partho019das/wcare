@@ -241,7 +241,7 @@ const AppointmentFormPage = () => {
     <section className="min-h-screen bg-gray-50/50 py-12 flex items-center justify-center">
       <div className="container mx-auto px-4 max-w-2xl">
         <div className="bg-white border border-gray-200 rounded-3xl p-6 md:p-10 shadow-md">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 text-center">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-950 mb-2 text-center">
             Book Medical Appointment
           </h2>
           <p className="text-gray-500 text-sm text-center mb-8">
