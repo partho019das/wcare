@@ -81,7 +81,6 @@ const DashboardPage = () => {
 
     try {
       const token = localStorage.getItem('access-token');
-
       const form = e.target;
       const updatedData = {
         patientName: form.patientName.value,
@@ -114,18 +113,32 @@ const DashboardPage = () => {
     e.preventDefault();
 
     try {
-      const { error } = await authClient.user.update({
-        name: profileName,
-        image: profileImage,
+      const token = localStorage.getItem('access-token');
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+
+      const res = await fetch(`${baseUrl}/api/update-profile`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: profileName,
+          image: profileImage,
+        }),
       });
 
-      if (error) {
-        alert(error.message || 'Failed to update profile');
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || 'Failed to update profile');
         return;
       }
 
       setProfileModal(false);
-      alert('Profile updated successfully! Please refresh if changes do not reflect immediately.');
+      alert('Profile updated successfully!');
+      window.location.reload();
+
     } catch (error) {
       console.error(error);
       alert('Failed to update profile');
@@ -261,7 +274,6 @@ const DashboardPage = () => {
           </div>
         )}
 
-        {/* ==================== 1. PROFILE UPDATE MODAL ==================== */}
         {profileModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-100">
@@ -307,7 +319,6 @@ const DashboardPage = () => {
           </div>
         )}
 
-        {/* ==================== 2. APPOINTMENT UPDATE MODAL ==================== */}
         {selectedBooking && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto">
