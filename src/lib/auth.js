@@ -13,6 +13,12 @@ export const auth = betterAuth({
     client,
   }),
 
+  // ⭐ এই কনফিগারেশনটি প্রোফাইল আপডেট ও এডিট করার পারমিশন অন করে দেবে
+  user: {
+    modelName: "user",
+    additionalFields: {},
+  },
+
   emailAndPassword: {
     enabled: true,
   },
@@ -25,9 +31,5 @@ export const auth = betterAuth({
   },
 });
 
-// এই কাস্টম ফাংশনটি Vercel-এর যেকোনো ভুল ফোল্ডার নেমিং-এর সমস্যাকে বাইপাস করে দেবে
-const handleAuth = async (req) => {
-  return auth.handler(req);
-};
-
-export { handleAuth as GET, handleAuth as POST };
+export const GET = auth.handler;
+export const POST = auth.handler;
