@@ -6,7 +6,7 @@ const client = new MongoClient(process.env.MONGODB_URI);
 const db = client.db("docter");
 
 export const auth = betterAuth({
-  // কোনো ডাইনামিক লজিক বা ফলব্যাক ছাড়া সরাসরি আপনার লাইভ ইউআরএল স্ট্রিং
+  // আপনার লাইভ প্রোডাকশন ইউআরএল
   baseURL: "https://wcare-gamma.vercel.app", 
   secret: process.env.BETTER_AUTH_SECRET || "fallback-secret-key-for-building-phase",
 
@@ -25,3 +25,7 @@ export const auth = betterAuth({
     },
   },
 });
+
+// Next.js অ্যাপ রাউটারের জন্য অফিসিয়াল Better-Auth হ্যান্ডলার এক্সপোর্ট
+export const GET = auth.handler;
+export const POST = auth.handler;
