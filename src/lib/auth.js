@@ -6,7 +6,6 @@ const client = new MongoClient(process.env.MONGODB_URI);
 const db = client.db("docter");
 
 export const auth = betterAuth({
-  // আপনার লাইভ প্রোডাকশন ইউআরএল
   baseURL: "https://wcare-gamma.vercel.app", 
   secret: process.env.BETTER_AUTH_SECRET || "fallback-secret-key-for-building-phase",
 
@@ -26,6 +25,9 @@ export const auth = betterAuth({
   },
 });
 
-// Next.js অ্যাপ রাউটারের জন্য অফিসিয়াল Better-Auth হ্যান্ডলার এক্সপোর্ট
-export const GET = auth.handler;
-export const POST = auth.handler;
+// এই কাস্টম ফাংশনটি Vercel-এর যেকোনো ভুল ফোল্ডার নেমিং-এর সমস্যাকে বাইপাস করে দেবে
+const handleAuth = async (req) => {
+  return auth.handler(req);
+};
+
+export { handleAuth as GET, handleAuth as POST };
